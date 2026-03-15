@@ -1,26 +1,47 @@
-// app.js - Using ES Modules
+// app.js - Demonstrating Module Encapsulation
 
-console.log('=== ES Modules Demo ===\n');
+import { add, getAddCallCount } from './add.js';
+import { subtract, getSubtractCallCount } from './subtract.js';
 
-// Method 1: Import from individual files
-import { add } from './add.js';
-import { subtract } from './subtract.js';
+console.log('=== Module Encapsulation Demo ===\n');
 
-console.log('Direct imports from individual files:');
-console.log('5 + 3 =', add(5, 3));
-console.log('10 - 4 =', subtract(10, 4));
+// ========================================
+// 1. Using Exported Functions (PUBLIC API)
+// ========================================
+console.log('--- Calling exported functions ---');
+console.log('Result: 5 + 3 =', add(5, 3));
+console.log('Result: 10 + 20 =', add(10, 20));
+console.log('Result: 100 - 40 =', subtract(100, 40));
 
-// Method 2: Import from barrel file (index.js)
-// This is cleaner - one import for multiple functions!
-import { add as addFromBarrel, subtract as subtractFromBarrel } from './index.js';
+// ========================================
+// 2. Accessing Private Data via Public Getters
+// ========================================
+console.log('\n--- Accessing private state safely via getters ---');
+console.log('add() was called', getAddCallCount(), 'times');
+console.log('subtract() was called', getSubtractCallCount(), 'time');
 
-console.log('\nImports from barrel file (index.js):');
-console.log('20 + 15 =', addFromBarrel(20, 15));
-console.log('100 - 42 =', subtractFromBarrel(100, 42));
+// ========================================
+// 3. TRYING to Access Private Data (FAILS!)
+// ========================================
+console.log('\n--- Attempting to access private data ---');
 
-// Method 3: Import all as namespace
-import * as math from './index.js';
+// These would cause errors if uncommented:
+// console.log(callCount);      // ReferenceError: callCount is not defined
+// console.log(SECRET_KEY);     // ReferenceError: SECRET_KEY is not defined
+// logOperation(1, 2, 3);       // ReferenceError: logOperation is not defined
 
-console.log('\nNamespace import (import * as math):');
-console.log('8 + 2 =', math.add(8, 2));
-console.log('50 - 25 =', math.subtract(50, 25));
+console.log('❌ callCount - NOT accessible (private variable)');
+console.log('❌ SECRET_KEY - NOT accessible (private constant)');
+console.log('❌ logOperation() - NOT accessible (private function)');
+
+// ========================================
+// 4. What IS Accessible?
+// ========================================
+console.log('\n--- What can we import from add.js? ---');
+import * as addModule from './add.js';
+console.log('Exported items:', Object.keys(addModule));
+// Only shows: ['add', 'getAddCallCount'] - the private stuff is HIDDEN!
+
+console.log('\n=== KEY TAKEAWAY ===');
+console.log('Modules protect data by only exposing what you explicitly export.');
+console.log('Private variables, constants, and helper functions stay encapsulated.');
